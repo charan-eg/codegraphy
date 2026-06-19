@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "repo-lens"
+name = "codegraphy"
 dynamic = ["version"]
 description = "SQLite/PostgreSQL codebase knowledge graph and MCP server for Claude Code"
 requires-python = ">=3.10"
@@ -37,7 +37,7 @@ html = ["tree-sitter", "tree-sitter-html"]
 all = ["psycopg2-binary", "pgvector", "tree-sitter", "tree-sitter-javascript", "tree-sitter-typescript", "tree-sitter-html"]
 
 [project.scripts]
-repo-lens = "repolens.cli:cli"
+codegraphy = "repolens.cli:cli"
 
 [tool.setuptools.dynamic]
 version = { attr = "repolens.__version__" }

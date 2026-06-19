@@ -3,7 +3,7 @@ from ..db.store import Store
 from ..config import DATABASE_URL, REPOLENS_ROOT
 import subprocess
 
-mcp = FastMCP("repolens")
+mcp = FastMCP("codegraphy")
 store = Store(DATABASE_URL)
 
 @mcp.tool()

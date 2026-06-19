@@ -3,11 +3,11 @@ from .config import load_config
 
 @click.group()
 def cli():
-    """repo-lens: Codebase knowledge graph & MCP server."""
+    """codegraphy: Codebase knowledge graph & MCP server."""
     load_config()
 
 @cli.command()
-@click.option('--db', help='Database URL (e.g. postgresql://localhost/repo-lens)')
+@click.option('--db', help='Database URL (e.g. postgresql://localhost/codegraphy)')
 def init(db):
     """Initialize the database schema."""
     import repolens.config as config

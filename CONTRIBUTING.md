@@ -1,4 +1,4 @@
-# Contributing to repo-lens
+# Contributing to codegraphy
 
 Thanks for your interest in contributing! This document covers how to set up a development environment, the project conventions, and how to submit changes.
 
@@ -17,7 +17,7 @@ Thanks for your interest in contributing! This document covers how to set up a d
 
 ```bash
 git clone <repo-url>
-cd repo-lens
+cd codegraphy
 
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
@@ -28,9 +28,9 @@ pip install -e ".[all]"
 ### Verify Installation
 
 ```bash
-repo-lens init
-repo-lens index .
-repo-lens stats
+codegraphy init
+codegraphy index .
+codegraphy stats
 ```
 
 ---
@@ -194,7 +194,7 @@ These are high-impact areas where contributions are welcome:
 
 1. Fork the repo and create a feature branch
 2. Make your changes — keep commits focused and atomic
-3. Ensure `repo-lens index .` still works on a sample project
+3. Ensure `codegraphy index .` still works on a sample project
 4. Run tests (when available): `pytest tests/`
 5. Open a pull request with a clear description of what and why
 

@@ -5,6 +5,7 @@ __pycache__/*
 */db/__pycache__/*
 */mcp/__pycache__/*
 repolens.db
+codegraphy.db
 .DS_Store
 build/
 dist/

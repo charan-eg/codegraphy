@@ -34,7 +34,7 @@ class Store:
             # Handle sqlite:///path
             self.db_path = db_url.replace("sqlite:///", "")
             if not self.db_path:
-                self.db_path = "repolens.db"
+                self.db_path = "codegraphy.db"
 
     @contextmanager
     def get_connection(self):
@@ -160,4 +160,3 @@ class Store:
                             VALUES ({p}, {p}, {p})
                             ON CONFLICT DO NOTHING
                         """, edge_records)
-

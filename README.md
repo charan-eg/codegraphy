@@ -1,4 +1,4 @@
-# repo-lens
+# codegraphy
 
 Standalone Python package that parses a codebase into a knowledge graph (PostgreSQL or SQLite) and exposes it as an [MCP](https://modelcontextprotocol.io/) server for Claude Code. Claude calls graph tools instead of `Read` + `Bash(grep)` — cuts exploration token cost by 5–10×.
 
@@ -11,7 +11,7 @@ Standalone Python package that parses a codebase into a knowledge graph (Postgre
 
 Claude exploring an unfamiliar codebase today:
 
-| Task | Without repo-lens | With repo-lens |
+| Task | Without codegraphy | With codegraphy |
 |------|-------------------|----------------|
 | Find where `Something` is defined | Read 10 files (~15k tokens) | `search_symbol("Something")` (~200 tokens) |
 | Understand a file's structure | Read full file (~3k tokens) | `get_file_summary("views.py")` (~300 tokens) |
@@ -22,16 +22,16 @@ Claude exploring an unfamiliar codebase today:
 
 ```bash
 # SQLite-only install (default, zero config):
-pip install repo-lens
+pip install codegraphy
 
 # For PostgreSQL support:
-pip install repo-lens[postgres]
+pip install codegraphy[postgres]
 
 # For JS/TS parsing (planned):
-pip install repo-lens[js]
+pip install codegraphy[js]
 
 # Everything:
-pip install repo-lens[all]
+pip install codegraphy[all]
 ```
 
 The base PyPI package keeps SQLite support in the standard library path, so PostgreSQL stays opt-in.
@@ -42,13 +42,13 @@ The base PyPI package keeps SQLite support in the standard library path, so Post
 
 ```bash
 # 1. Initialize the database (SQLite by default)
-repo-lens init
+codegraphy init
 
 # 2. Index your project
-repo-lens index .
+codegraphy index .
 
 # 3. Start the MCP server (stdio, for Claude Code)
-repo-lens serve
+codegraphy serve
 ```
 
 That's it. Claude can now query your codebase graph instead of reading files.
@@ -58,20 +58,20 @@ That's it. Claude can now query your codebase graph instead of reading files.
 ## CLI Reference
 
 ```bash
-repo-lens init [--db URL]         # Create tables (SQLite default, or pass Postgres URL)
-repo-lens index PATH [--exclude]  # Full index of a directory
-repo-lens update                  # Incremental re-index via git diff
-repo-lens serve                   # Start MCP server over stdio
-repo-lens search NAME             # Search symbols (debug, not MCP)
-repo-lens usages QUALIFIED_NAME   # Find usages (debug, not MCP)
-repo-lens stats                   # Show graph statistics
+codegraphy init [--db URL]         # Create tables (SQLite default, or pass Postgres URL)
+codegraphy index PATH [--exclude]  # Full index of a directory
+codegraphy update                  # Incremental re-index via git diff
+codegraphy serve                   # Start MCP server over stdio
+codegraphy search NAME             # Search symbols (debug, not MCP)
+codegraphy usages QUALIFIED_NAME   # Find usages (debug, not MCP)
+codegraphy stats                   # Show graph statistics
 ```
 
 ---
 
 ## MCP Tools
 
-When running as an MCP server, repo-lens exposes these tools to Claude:
+When running as an MCP server, codegraphy exposes these tools to Claude:
 
 | Tool | Description |
 |------|-------------|
@@ -91,12 +91,12 @@ All tools return a `source` field (`"graph"` or `"grep"`) so Claude can gauge co
 
 ## Configuration
 
-Priority: CLI flag → environment variable → `repolens.toml` → defaults.
+Priority: CLI flag → environment variable → `codegraphy.toml` → defaults.
 
 ### Environment Variables
 
 ```bash
-DATABASE_URL=sqlite:///repolens.db    # or postgresql://localhost/repolens
+DATABASE_URL=sqlite:///codegraphy.db    # or postgresql://localhost/codegraphy
 REPOLENS_ROOT=.                        # project root for grep fallback
 REPOLENS_PLUGINS=repolens.plugins.django
 ```
@@ -104,8 +104,8 @@ REPOLENS_PLUGINS=repolens.plugins.django
 ### Config File (optional)
 
 ```toml
-# repolens.toml (place at project root)
-database_url = "postgresql://localhost/repolens"
+# codegraphy.toml (place at project root)
+database_url = "postgresql://localhost/codegraphy"
 root = "."
 exclude = ["migrations", "node_modules", ".venv", "__pycache__"]
 plugins = ["repolens.plugins.django"]
@@ -121,11 +121,11 @@ plugins = ["repolens.plugins.django"]
 // .claude/settings.json
 {
   "mcpServers": {
-    "repolens": {
-      "command": "repo-lens",
+    "codegraphy": {
+      "command": "codegraphy",
       "args": ["serve"],
       "env": {
-        "DATABASE_URL": "sqlite:///repolens.db"
+        "DATABASE_URL": "sqlite:///codegraphy.db"
       }
     }
   }
@@ -140,7 +140,7 @@ plugins = ["repolens.plugins.django"]
   "hooks": {
     "Stop": [{
       "type": "command",
-      "command": "repo-lens update"
+      "command": "codegraphy update"
     }]
   }
 }
@@ -219,10 +219,10 @@ REPOLENS_PLUGINS=repolens.plugins.django
 
 | Milestone | Status |
 |-----------|--------|
-| M1 — Schema + Python indexer + `repo-lens index` | ✅ Complete |
+| M1 — Schema + Python indexer + `codegraphy index` | ✅ Complete |
 | M2 — `search_symbol` + `get_file_summary` + MCP serve | ✅ Complete |
 | M3 — `find_usages` + `path_between` + `get_context` + grep fallback | ✅ Complete |
-| M4 — `repo-lens update` (incremental) | ✅ Complete |
+| M4 — `codegraphy update` (incremental) | ✅ Complete |
 | M5 — Django plugin | 🔶 Partial (symbol re-tagging, no admin/signal edges) |
 | M6 — Semantic search (pgvector) | ⬜ Stub only |
 | M7 — JS/TS indexer (tree-sitter) | ⬜ Planned |
@@ -235,21 +235,21 @@ REPOLENS_PLUGINS=repolens.plugins.django
 
 ```bash
 # Clone and install in editable mode
-git clone <repo-url> && cd repo-lens
+git clone <repo-url> && cd codegraphy
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
 
 # Initialize local DB and index this project
-repo-lens init
-repo-lens index .
+codegraphy init
+codegraphy index .
 
 # Check stats
-repo-lens stats
+codegraphy stats
 ```
 
 ## Publishing
 
-`repo-lens` is configured to build as a standard PyPI distribution from `pyproject.toml`.
+`codegraphy` is configured to build as a standard PyPI distribution from `pyproject.toml`.
 
 For PyPI trusted publishing, use **`publish.yml`** as the workflow name. The workflow file lives at `.github/workflows/publish.yml`.
 
