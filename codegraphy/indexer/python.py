@@ -44,6 +44,14 @@ class PythonIndexer(BaseIndexer):
                     return f"{module_path}.{name}" if module_path else name
                 return f"{module_path}.{'.'.join(self.current_scope)}.{name}"
 
+            def get_import_qualname(self, node, imported_name, source_module):
+                scope = ".".join(self.current_scope)
+                parts = [module_path] if module_path else []
+                if scope:
+                    parts.append(scope)
+                parts.extend(["__import__", str(node.lineno), str(node.col_offset), source_module, imported_name])
+                return ".".join(parts)
+
             def visit_ClassDef(self, node):
                 qualname = self.get_qualname(node.name)
                 summary = ast.get_docstring(node) or ""
@@ -108,7 +116,7 @@ class PythonIndexer(BaseIndexer):
                 for alias in node.names:
                     # module level import
                     # e.g., import os
-                    qualname = self.get_qualname(alias.asname or alias.name)
+                    qualname = self.get_import_qualname(node, alias.asname or alias.name, alias.name)
                     symbols.append(Symbol(
                         name=alias.asname or alias.name,
                         qualified_name=qualname,
@@ -129,7 +137,7 @@ class PythonIndexer(BaseIndexer):
                 if node.module:
                     for alias in node.names:
                         name = alias.asname or alias.name
-                        qualname = self.get_qualname(name)
+                        qualname = self.get_import_qualname(node, name, node.module)
                         symbols.append(Symbol(
                             name=name,
                             qualified_name=qualname,

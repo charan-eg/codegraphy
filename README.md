@@ -40,6 +40,37 @@ The base PyPI package keeps SQLite support in the standard library path, so Post
 
 ---
 
+## PostgreSQL
+
+Install PostgreSQL support:
+
+```bash
+pip install 'codegraphy[postgres]'
+```
+
+Initialize with a PostgreSQL URL:
+
+```bash
+codegraphy init --db postgresql://USER:PASSWORD@HOST:PORT/DBNAME
+```
+
+Example:
+
+```bash
+codegraphy init --db postgresql://postgres:postgres@localhost:5432/codegraphy
+```
+
+Or set `DATABASE_URL` once and reuse it:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/codegraphy
+codegraphy init
+codegraphy index .
+codegraphy serve
+```
+
+---
+
 ## Quickstart
 
 ```bash

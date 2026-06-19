@@ -73,10 +73,21 @@ class Store:
             row = cursor.fetchone()
             return row[0] if row else None
 
+    def _dedupe_symbols(self, symbols: list) -> list:
+        deduped = []
+        seen = set()
+        for symbol in symbols:
+            if symbol.qualified_name in seen:
+                continue
+            seen.add(symbol.qualified_name)
+            deduped.append(symbol)
+        return deduped
+
     def upsert_file(self, file_path: str, git_hash: str, symbols: list, edges: list):
         """
         Replace symbols and edges for a file.
         """
+        symbols = self._dedupe_symbols(symbols)
         with self.get_connection() as conn:
             cursor = conn.cursor()
             
