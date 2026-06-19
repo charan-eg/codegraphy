@@ -2,6 +2,8 @@
 
 Standalone Python package that parses a codebase into a knowledge graph (PostgreSQL or SQLite) and exposes it as an [MCP](https://modelcontextprotocol.io/) server for Claude Code. Claude calls graph tools instead of `Read` + `Bash(grep)` — cuts exploration token cost by 5–10×.
 
+**PyPI:** https://pypi.org/project/codegraphy/
+
 **Python:** 3.10+  
 **License:** MIT
 
