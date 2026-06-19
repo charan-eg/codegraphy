@@ -1,0 +1,20 @@
+[project]
+name = "repo-lens"
+version = "0.1.0"
+description = "Postgres-backed codebase knowledge graph as an MCP server for Claude Code"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "mcp>=1.0",
+    "psycopg2-binary",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg2-binary"]
+pgvector = ["pgvector"]
+js = ["tree-sitter", "tree-sitter-javascript", "tree-sitter-typescript"]
+html = ["tree-sitter", "tree-sitter-html"]
+all = ["psycopg2-binary", "pgvector", "tree-sitter", "tree-sitter-javascript", "tree-sitter-typescript", "tree-sitter-html"]
+
+[project.scripts]
+repo-lens = "repolens.cli:cli"

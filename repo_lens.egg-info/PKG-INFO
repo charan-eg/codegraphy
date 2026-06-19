@@ -1,0 +1,26 @@
+Metadata-Version: 2.4
+Name: repo-lens
+Version: 0.1.0
+Summary: Postgres-backed codebase knowledge graph as an MCP server for Claude Code
+Requires-Python: >=3.10
+Requires-Dist: click>=8.0
+Requires-Dist: mcp>=1.0
+Requires-Dist: psycopg2-binary
+Provides-Extra: postgres
+Requires-Dist: psycopg2-binary; extra == "postgres"
+Provides-Extra: pgvector
+Requires-Dist: pgvector; extra == "pgvector"
+Provides-Extra: js
+Requires-Dist: tree-sitter; extra == "js"
+Requires-Dist: tree-sitter-javascript; extra == "js"
+Requires-Dist: tree-sitter-typescript; extra == "js"
+Provides-Extra: html
+Requires-Dist: tree-sitter; extra == "html"
+Requires-Dist: tree-sitter-html; extra == "html"
+Provides-Extra: all
+Requires-Dist: psycopg2-binary; extra == "all"
+Requires-Dist: pgvector; extra == "all"
+Requires-Dist: tree-sitter; extra == "all"
+Requires-Dist: tree-sitter-javascript; extra == "all"
+Requires-Dist: tree-sitter-typescript; extra == "all"
+Requires-Dist: tree-sitter-html; extra == "all"
