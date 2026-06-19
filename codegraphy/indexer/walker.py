@@ -5,6 +5,17 @@ from .python import PythonIndexer
 from ..db.store import Store
 
 INDEXERS = [PythonIndexer()]
+DEFAULT_EXCLUDE = [
+    '.git',
+    'node_modules',
+    '__pycache__',
+    '.venv',
+    'dist',
+    'build',
+    '.tox',
+    '.pytest_cache',
+    'migrations',
+]
 
 def sha256(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
@@ -41,37 +52,53 @@ def get_files_to_index(root: str, exclude: list[str]) -> list[str]:
         
     return files
 
-def index_path(root: str, store: Store, plugins: list, exclude: list[str] = None):
-    exclude = exclude or ['.git', 'node_modules', '__pycache__', '.venv']
-    files = get_files_to_index(root, exclude)
-    
+def index_files(files: list[str], store: Store, plugins: list, progress_callback=None):
     indexed_count = 0
-    for path in files:
-        indexer = next((i for i in INDEXERS if i.can_handle(path)), None)
-        if not indexer:
-            continue
-            
-        try:
-            with open(path, 'rb') as f:
-                content_bytes = f.read()
-        except OSError:
-            continue
-            
-        file_hash = sha256(content_bytes)
-        
-        # Check if unchanged
-        if store.get_file_hash(path) == file_hash:
-            continue
-            
-        content_str = content_bytes.decode('utf-8', errors='replace')
-        symbols, edges = indexer.index_file(path, content_str)
-        
-        # Apply plugins
-        for plugin in plugins:
-            symbols = [plugin.on_symbol(s) for s in symbols]
-            edges.extend(plugin.extra_edges(symbols))
-            
-        store.upsert_file(path, file_hash, symbols, edges)
-        indexed_count += 1
-        
+    if not files:
+        return indexed_count
+
+    with store.get_connection() as conn:
+        existing_hashes = store.get_file_hashes(files, conn=conn)
+
+        total_files = len(files)
+        for scanned_count, path in enumerate(files, start=1):
+            indexer = next((i for i in INDEXERS if i.can_handle(path)), None)
+            if not indexer:
+                if progress_callback:
+                    progress_callback(path, scanned_count, indexed_count, total_files)
+                continue
+
+            try:
+                with open(path, 'rb') as f:
+                    content_bytes = f.read()
+            except OSError:
+                if progress_callback:
+                    progress_callback(path, scanned_count, indexed_count, total_files)
+                continue
+
+            file_hash = sha256(content_bytes)
+            if existing_hashes.get(path) == file_hash:
+                if progress_callback:
+                    progress_callback(path, scanned_count, indexed_count, total_files)
+                continue
+
+            content_str = content_bytes.decode('utf-8', errors='replace')
+            symbols, edges = indexer.index_file(path, content_str)
+
+            for plugin in plugins:
+                symbols = [plugin.on_symbol(s) for s in symbols]
+                edges.extend(plugin.extra_edges(symbols))
+
+            store.upsert_file(path, file_hash, symbols, edges, conn=conn)
+            existing_hashes[path] = file_hash
+            indexed_count += 1
+
+            if progress_callback:
+                progress_callback(path, scanned_count, indexed_count, total_files)
+
     return indexed_count
+
+def index_path(root: str, store: Store, plugins: list, exclude: list[str] = None, progress_callback=None):
+    exclude = exclude or DEFAULT_EXCLUDE
+    files = get_files_to_index(root, exclude)
+    return index_files(files, store, plugins, progress_callback=progress_callback)

@@ -4,13 +4,40 @@ from ..config import DATABASE_URL, CODEGRAPHY_ROOT
 import subprocess
 
 mcp = FastMCP("codegraphy")
-store = Store(DATABASE_URL)
+_store = None
+
+def get_store() -> Store:
+    global _store
+    if _store is None:
+        _store = Store(DATABASE_URL)
+    return _store
+
+def _graph_stats(store: Store) -> dict:
+    with store.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM cg_files")
+        files = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM cg_symbols")
+        symbols = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM cg_edges")
+        edges = cursor.fetchone()[0]
+        return {
+            "files": files,
+            "symbols": symbols,
+            "edges": edges,
+            "backend": "postgres" if store.is_postgres else "sqlite"
+        }
+
+def prepare_server() -> dict:
+    store = get_store()
+    return _graph_stats(store)
 
 @mcp.tool()
 def search_symbol(name: str, kind: str = None, limit: int = 10, fallback_grep: bool = True) -> list[dict]:
     """
     Find symbols by name (exact, prefix, or substring match).
     """
+    store = get_store()
     results = []
     
     with store.get_connection() as conn:
@@ -75,6 +102,7 @@ def get_file_summary(file_path: str) -> dict:
     """
     One-shot summary of a file: classes, functions, imports.
     """
+    store = get_store()
     with store.get_connection() as conn:
         cursor = conn.cursor()
         p = "%s" if store.is_postgres else "?"
@@ -114,6 +142,7 @@ def find_usages(qualified_name: str, limit: int = 20, fallback_grep: bool = True
     """
     Find every symbol that imports, calls, or references this symbol.
     """
+    store = get_store()
     results = []
     with store.get_connection() as conn:
         cursor = conn.cursor()
@@ -187,6 +216,7 @@ def path_between(from_qualified: str, to_qualified: str, max_depth: int = 6) -> 
     """
     BFS shortest path through the edge graph between two symbols.
     """
+    store = get_store()
     with store.get_connection() as conn:
         cursor = conn.cursor()
         p = "%s" if store.is_postgres else "?"
@@ -239,6 +269,7 @@ def search_semantic(query: str, limit: int = 10) -> list[dict]:
     pgvector semantic search over symbol summaries.
     No-ops on SQLite.
     """
+    store = get_store()
     if not store.is_postgres:
         return []
         
@@ -248,20 +279,7 @@ def search_semantic(query: str, limit: int = 10) -> list[dict]:
 @mcp.tool()
 def graph_stats() -> dict:
     """Quick health check."""
-    with store.get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM cg_files")
-        files = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM cg_symbols")
-        symbols = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM cg_edges")
-        edges = cursor.fetchone()[0]
-        return {
-            "files": files,
-            "symbols": symbols,
-            "edges": edges,
-            "backend": "postgres" if store.is_postgres else "sqlite"
-        }
+    return _graph_stats(get_store())
 
 @mcp.tool()
 def grep_search(pattern: str, include: list[str] = None, exclude: list[str] = None, limit: int = 30) -> list[dict]:

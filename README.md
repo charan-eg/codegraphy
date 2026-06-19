@@ -100,6 +100,8 @@ codegraphy usages QUALIFIED_NAME   # Find usages (debug, not MCP)
 codegraphy stats                   # Show graph statistics
 ```
 
+`codegraphy index` and `codegraphy update` show progress while they run, then print a summary with files scanned, files indexed, and elapsed time. `codegraphy serve` also shows startup progress and then reports when the MCP server is ready and waiting for a stdio client.
+
 ---
 
 ## MCP Tools
