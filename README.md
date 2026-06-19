@@ -98,9 +98,9 @@ Priority: CLI flag → environment variable → `codegraphy.toml` → defaults.
 ### Environment Variables
 
 ```bash
-DATABASE_URL=sqlite:///codegraphy.db    # or postgresql://localhost/codegraphy
-REPOLENS_ROOT=.                        # project root for grep fallback
-REPOLENS_PLUGINS=repolens.plugins.django
+DATABASE_URL=sqlite:///codegraphy.db      # or postgresql://localhost/codegraphy
+CODEGRAPHY_ROOT=.                         # project root for grep fallback
+CODEGRAPHY_PLUGINS=codegraphy.plugins.django
 ```
 
 ### Config File (optional)
@@ -110,7 +110,7 @@ REPOLENS_PLUGINS=repolens.plugins.django
 database_url = "postgresql://localhost/codegraphy"
 root = "."
 exclude = ["migrations", "node_modules", ".venv", "__pycache__"]
-plugins = ["repolens.plugins.django"]
+plugins = ["codegraphy.plugins.django"]
 ```
 
 ---
@@ -153,9 +153,9 @@ plugins = ["repolens.plugins.django"]
 ## Architecture
 
 ```
-repolens/
+codegraphy/
 ├── cli.py              # Click CLI entry points
-├── config.py           # DATABASE_URL, REPOLENS_ROOT, plugin list
+├── config.py           # DATABASE_URL, CODEGRAPHY_ROOT, plugin list
 ├── db/
 │   ├── schema.py       # CREATE TABLE statements (PG + SQLite)
 │   └── store.py        # upsert_symbol, upsert_edge, query helpers
@@ -212,7 +212,7 @@ Detects Django patterns by file naming convention:
 
 Enable via environment variable:
 ```bash
-REPOLENS_PLUGINS=repolens.plugins.django
+CODEGRAPHY_PLUGINS=codegraphy.plugins.django
 ```
 
 ---

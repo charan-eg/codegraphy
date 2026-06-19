@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from ..db.store import Store
-from ..config import DATABASE_URL, REPOLENS_ROOT
+from ..config import DATABASE_URL, CODEGRAPHY_ROOT
 import subprocess
 
 mcp = FastMCP("codegraphy")
@@ -53,7 +53,7 @@ def search_symbol(name: str, kind: str = None, limit: int = 10, fallback_grep: b
     if not results and fallback_grep:
         try:
             # We use subprocess to run grep
-            grep_cmd = ['grep', '-rn', '--include=*.py', '--include=*.js', '--include=*.ts', '--include=*.html', name, REPOLENS_ROOT]
+            grep_cmd = ['grep', '-rn', '--include=*.py', '--include=*.js', '--include=*.ts', '--include=*.html', name, CODEGRAPHY_ROOT]
             res = subprocess.run(grep_cmd, capture_output=True, text=True)
             if res.stdout:
                 for line in res.stdout.splitlines()[:limit]:
@@ -145,7 +145,7 @@ def find_usages(qualified_name: str, limit: int = 20, fallback_grep: bool = True
     if not results and fallback_grep:
         short_name = qualified_name.split('.')[-1]
         try:
-            grep_cmd = ['grep', '-rn', short_name, REPOLENS_ROOT]
+            grep_cmd = ['grep', '-rn', short_name, CODEGRAPHY_ROOT]
             res = subprocess.run(grep_cmd, capture_output=True, text=True)
             if res.stdout:
                 for line in res.stdout.splitlines()[:limit]:
@@ -276,7 +276,7 @@ def grep_search(pattern: str, include: list[str] = None, exclude: list[str] = No
         for exc in exclude:
             cmd.append(f'--exclude-dir={exc}')
             
-    cmd.extend([pattern, REPOLENS_ROOT])
+    cmd.extend([pattern, CODEGRAPHY_ROOT])
     
     results = []
     try:

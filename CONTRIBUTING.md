@@ -38,7 +38,7 @@ codegraphy stats
 ## Project Structure
 
 ```
-repolens/
+codegraphy/
 ├── cli.py              # Click CLI — add new commands here
 ├── config.py           # Configuration loading (env vars, TOML)
 ├── db/
@@ -62,8 +62,8 @@ repolens/
 
 ### Adding a New Indexer (e.g., JS/TS, HTML)
 
-1. Create `repolens/indexer/<language>.py`
-2. Subclass `BaseIndexer` from `repolens/indexer/base.py`:
+1. Create `codegraphy/indexer/<language>.py`
+2. Subclass `BaseIndexer` from `codegraphy/indexer/base.py`:
    ```python
    class JavaScriptIndexer(BaseIndexer):
        def can_handle(self, file_path: str) -> bool:
@@ -73,7 +73,7 @@ repolens/
            # Parse and return symbols + edges
            ...
    ```
-3. Register in `repolens/indexer/walker.py`:
+3. Register in `codegraphy/indexer/walker.py`:
    ```python
    INDEXERS = [PythonIndexer(), JavaScriptIndexer()]
    ```
@@ -81,7 +81,7 @@ repolens/
 
 ### Adding a New Plugin
 
-1. Create `repolens/plugins/<name>.py`
+1. Create `codegraphy/plugins/<name>.py`
 2. Subclass `BasePlugin`:
    ```python
    class MyPlugin(BasePlugin):
@@ -93,17 +93,17 @@ repolens/
            # Derive additional relationships
            return []
    ```
-3. Users enable via `REPOLENS_PLUGINS=repolens.plugins.<name>`
+3. Users enable via `CODEGRAPHY_PLUGINS=codegraphy.plugins.<name>`
 
 ### Adding a New MCP Tool
 
-1. Add the function in `repolens/mcp/server.py` with the `@mcp.tool()` decorator
+1. Add the function in `codegraphy/mcp/server.py` with the `@mcp.tool()` decorator
 2. Follow existing patterns:
    - Accept simple typed parameters
    - Return `list[dict]` or `dict`
    - Include `"source": "graph"` or `"source": "grep"` in responses
    - Support `fallback_grep` parameter where applicable
-3. Add a corresponding CLI debug command in `repolens/cli.py` if useful
+3. Add a corresponding CLI debug command in `codegraphy/cli.py` if useful
 
 ---
 
@@ -153,7 +153,7 @@ pytest tests/
 
 ```python
 # tests/test_indexer.py
-from repolens.indexer.python import PythonIndexer
+from codegraphy.indexer.python import PythonIndexer
 
 def test_extracts_class():
     source = '''
@@ -179,8 +179,8 @@ These are high-impact areas where contributions are welcome:
 | Area | Description | Milestone |
 |------|-------------|-----------|
 | **Tests** | Add pytest suite for indexer, store, and MCP tools | — |
-| **Config loading** | Implement `repolens.toml` parsing in `config.load_config()` | — |
-| **Plugin wiring** | Instantiate plugins from `REPOLENS_PLUGINS` in CLI commands | M5 |
+| **Config loading** | Implement `codegraphy.toml` parsing in `config.load_config()` | — |
+| **Plugin wiring** | Instantiate plugins from `CODEGRAPHY_PLUGINS` in CLI commands | M5 |
 | **Django plugin** | Admin registration and signal detection via AST decorators | M5 |
 | **JS/TS indexer** | tree-sitter-based extraction of functions, classes, imports, calls | M7 |
 | **HTML indexer** | Template inheritance, blocks, `{% url %}` references | M8 |

@@ -4,8 +4,7 @@ __pycache__/*
 */indexer/__pycache__/*
 */db/__pycache__/*
 */mcp/__pycache__/*
-repolens.db
-codegraphy.db
+*.db
 .DS_Store
 build/
 dist/

@@ -37,10 +37,10 @@ html = ["tree-sitter", "tree-sitter-html"]
 all = ["psycopg2-binary", "pgvector", "tree-sitter", "tree-sitter-javascript", "tree-sitter-typescript", "tree-sitter-html"]
 
 [project.scripts]
-codegraphy = "repolens.cli:cli"
+codegraphy = "codegraphy.cli:cli"
 
 [tool.setuptools.dynamic]
-version = { attr = "repolens.__version__" }
+version = { attr = "codegraphy.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["repolens*"]
+include = ["codegraphy*"]
