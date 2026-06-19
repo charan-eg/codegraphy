@@ -1,12 +1,32 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "repo-lens"
-version = "0.1.0"
-description = "Postgres-backed codebase knowledge graph as an MCP server for Claude Code"
+dynamic = ["version"]
+description = "SQLite/PostgreSQL codebase knowledge graph and MCP server for Claude Code"
 requires-python = ">=3.10"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Charan Kulal" },
+]
+keywords = ["mcp", "code-analysis", "knowledge-graph", "claude-code", "sqlite", "postgresql"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Documentation",
+]
 dependencies = [
     "click>=8.0",
     "mcp>=1.0",
-    "psycopg2-binary",
 ]
 
 [project.optional-dependencies]
@@ -18,3 +38,9 @@ all = ["psycopg2-binary", "pgvector", "tree-sitter", "tree-sitter-javascript", "
 
 [project.scripts]
 repo-lens = "repolens.cli:cli"
+
+[tool.setuptools.dynamic]
+version = { attr = "repolens.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["repolens*"]

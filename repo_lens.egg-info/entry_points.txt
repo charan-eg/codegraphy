@@ -1,2 +1,0 @@
-[console_scripts]
-repo-lens = repolens.cli:cli

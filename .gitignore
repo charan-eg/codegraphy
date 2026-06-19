@@ -6,3 +6,7 @@ __pycache__/*
 */mcp/__pycache__/*
 repolens.db
 .DS_Store
+build/
+dist/
+*.egg-info/
+*.whl

@@ -200,6 +200,21 @@ These are high-impact areas where contributions are welcome:
 
 ---
 
+## Publishing a Release
+
+PyPI packaging is driven by `pyproject.toml`.
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+python -m twine upload dist/*
+```
+
+Publish the base package for SQLite users, and keep PostgreSQL support behind the `postgres` extra.
+
+---
+
 ## Design Principles
 
 1. **Zero-config works** — SQLite by default, no server required

@@ -13,7 +13,7 @@ Claude exploring an unfamiliar codebase today:
 
 | Task | Without repo-lens | With repo-lens |
 |------|-------------------|----------------|
-| Find where `MessageDraft` is defined | Read 10 files (~15k tokens) | `search_symbol("MessageDraft")` (~200 tokens) |
+| Find where `Something` is defined | Read 10 files (~15k tokens) | `search_symbol("Something")` (~200 tokens) |
 | Understand a file's structure | Read full file (~3k tokens) | `get_file_summary("views.py")` (~300 tokens) |
 
 ---
@@ -21,9 +21,10 @@ Claude exploring an unfamiliar codebase today:
 ## Installation
 
 ```bash
+# SQLite-only install (default, zero config):
 pip install repo-lens
 
-# For PostgreSQL support (default works with SQLite, zero config):
+# For PostgreSQL support:
 pip install repo-lens[postgres]
 
 # For JS/TS parsing (planned):
@@ -32,6 +33,8 @@ pip install repo-lens[js]
 # Everything:
 pip install repo-lens[all]
 ```
+
+The base PyPI package keeps SQLite support in the standard library path, so PostgreSQL stays opt-in.
 
 ---
 
@@ -242,6 +245,19 @@ repo-lens index .
 
 # Check stats
 repo-lens stats
+```
+
+## Publishing
+
+`repo-lens` is configured to build as a standard PyPI distribution from `pyproject.toml`.
+
+For PyPI trusted publishing, use **`publish.yml`** as the workflow name. The workflow file lives at `.github/workflows/publish.yml`.
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+python -m twine upload dist/*
 ```
 
 ---
